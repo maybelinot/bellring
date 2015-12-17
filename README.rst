@@ -2,6 +2,7 @@
 CONFIGURATION
 =============
 Example of configuration file in ~/.bellring::
+
    audio:
        destination: '"Blue Jeans"'
        file_path: ~/Downloads/23265__digifishmusic__spanner-chime-soft.wav
@@ -31,7 +32,6 @@ Example install, using VirtualEnv::
 
    # simply install
    # python setup.py install
-
 
 
 USAGE
