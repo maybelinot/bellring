@@ -1,0 +1,82 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Author: Eduard Trott
+# @Date:   2015-12-17 14:41:33
+# @Email:  etrott@redhat.com
+# @Last modified by:   etrott
+# @Last Modified time: 2015-12-17 16:47:09
+
+import os
+import time
+import argparse
+import logging
+
+from bellring.utils import logr, run, get_duration, config
+
+
+def parse_cli():
+    """
+    Set the command line arguments.
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--wait', '-w', default=0,
+                        help="How much minutes sleep before playing he sound")
+
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help="verbose output")
+    parser.add_argument('--debug', '-d', action='store_true',
+                        help="debug output")
+    parser.set_defaults(**dict((config or {}).items()))
+
+    args = vars(parser.parse_args())  # parse and load args as a dict
+
+    # Go ahead and deal with logging debug/verbosity setting
+    if args['debug']:
+        logr.setLevel(logging.DEBUG)
+    elif args['verbose']:
+        logr.setLevel(logging.INFO)
+    else:
+        logr.setLevel(logging.WARN)
+
+    return args
+
+
+if __name__ == "__main__":
+    args = parse_cli()
+
+    args['audio']['file_path'] = os.path.expanduser(args['audio']['file_path'])
+
+    audio_sources_desc = run(
+        "pactl list sources|sed -n -e 's/\t\tdevice\.description = //p'")[0].split('\n')[:-1]
+    audio_sources_names = run(
+        "pactl list sources|sed -n -e 's/\tName: //p'")[0].split()
+    audio_source = dict(zip(audio_sources_desc, audio_sources_names))
+    # Identify BJ Source-Output
+    source_outputs_info = run(
+        "pactl list source-outputs|sed -n -e 's/Source Output #//p; s/\t\tapplication.name = //p'")[0].split('\n')[:-1]
+    try:
+        source_output_idx = source_outputs_info[
+            source_outputs_info.index(args['audio']['destination']) - 1]
+    except:
+        raise RuntimeError("Can't find %s recording" % (args['audio']['destination']))
+    # Load ring_bell
+    run("pactl upload-sample %s" %
+        ("%s ringbell" % (args['audio']['file_path'])))
+    # wait
+    time.sleep(int(args['wait']))
+
+    # Move source output to monitor and adjust a volume
+    run("pactl move-source-output %s %s" % (source_output_idx,
+                                            audio_source[args['audio']['source']]))
+    run("pactl set-source-output-volume %s %s" %
+        (source_output_idx, args['audio']['volume']))
+    # Play sound
+    run("pactl play-sample ringbell alsa_output.pci-0000_00_1b.0.analog-stereo")
+
+    time.sleep(get_duration(args['audio']['file_path']) if args[
+               'audio']['file_path'][-3:] == 'wav' else args['audio']['play_time'])
+    # Move source output back and adjust a volume
+    run("pactl move-source-output %s %s" %
+        (source_output_idx, audio_source[args['mic']['source']]))
+    run("pactl set-source-output-volume %s %s" %
+        (source_output_idx, args['mic']['volume']))
