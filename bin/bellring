@@ -47,7 +47,7 @@ if __name__ == "__main__":
     args['audio']['file_path'] = os.path.expanduser(args['audio']['file_path'])
 
     audio_sources_desc = run(
-        "pactl list sources|sed -n -e 's/\t\tdevice\.description = //p'")[0].split('\n')[:-1]
+        "pactl list sources|sed -n -e 's/\tDescription: //p'")[0].split('\n')[:-1]
     audio_sources_names = run(
         "pactl list sources|sed -n -e 's/\tName: //p'")[0].split()
     audio_source = dict(zip(audio_sources_desc, audio_sources_names))
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         "pactl list source-outputs|sed -n -e 's/Source Output #//p; s/\t\tapplication.name = //p'")[0].split('\n')[:-1]
     try:
         source_output_idx = source_outputs_info[
-            source_outputs_info.index(args['audio']['destination']) - 1]
+            source_outputs_info.index('"%s"'%(args['audio']['destination'])) - 1]
     except:
         raise RuntimeError("Can't find %s recording" % (args['audio']['destination']))
     # Load ring_bell

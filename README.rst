@@ -4,13 +4,13 @@ CONFIGURATION
 Example of configuration file in ~/.bellring::
 
    audio:
-       destination: '"Blue Jeans"'
+       destination: Blue Jeans
        file_path: ~/Downloads/23265__digifishmusic__spanner-chime-soft.wav
-       source: '"Monitor of Built-in Audio Analog Stereo"'
+       source: Monitor of Built-in Audio Analog Stereo
        volume: 70000
        play_time: 5
    mic:
-       source: '"Built-in Audio Analog Stereo"'
+       source: Built-in Audio Analog Stereo
        volume: 30000
 
 
