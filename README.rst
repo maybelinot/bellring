@@ -37,6 +37,6 @@ Example install, using VirtualEnv::
 USAGE
 =====
 
-Run bellring to play sound after 60 seconds::
+Run bellring to play sound after 5 seconds::
 
-    bellring --wait 60
+    bellring --wait 5

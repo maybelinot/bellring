@@ -63,7 +63,7 @@ if __name__ == "__main__":
     run("pactl upload-sample %s" %
         ("%s ringbell" % (args['audio']['file_path'])))
     # wait
-    time.sleep(int(args['wait']))
+    time.sleep(int(args['wait'])*60)
 
     # Move source output to monitor and adjust a volume
     run("pactl move-source-output %s %s" % (source_output_idx,
