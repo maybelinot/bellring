@@ -1,4 +1,3 @@
-
 CONFIGURATION
 =============
 Example of configuration file in ~/.bellring::
@@ -37,6 +36,6 @@ Example install, using VirtualEnv::
 USAGE
 =====
 
-Run bellring to play sound after 5 seconds::
+Run bellring to play sound after 5 minutes::
 
     bellring --wait 5
